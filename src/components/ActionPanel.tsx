@@ -9,24 +9,24 @@ export function ActionPanel() {
     completeCase,
     actionLog,
     isLoading,
+    updateDifferential,
+    differential,
   } = useCaseStore();
 
   if (!currentCase) return null;
 
   const availableActions = currentCase.allowedActions.filter((a) => a.stage === currentStage);
 
-  // Dynamic diagnosis options from case actions + correct diagnosis
-  const diagnosisActions = currentCase.allowedActions.filter((a) => a.stage === "diagnosis");
-  const diagnosisOptions = [
-    currentCase.diagnosis,
-    ...diagnosisActions.map((a) => a.label),
-  ].filter((v, i, arr) => arr.indexOf(v) === i); // dedupe
-
-  // Dynamic treatment options from case actions
-  const treatmentActions = currentCase.allowedActions.filter((a) => a.stage === "treatment");
-  const treatmentOptions = treatmentActions.length > 0
-    ? treatmentActions.map((a) => a.label)
-    : ["No treatment actions defined"];
+  const handleActionClick = (actionId: string, actionLabel: string, stage: string) => {
+    executeAction(actionId, actionLabel);
+    // If it's a diagnosis action, also update the differential
+    if (stage === "diagnosis") {
+      const current = useCaseStore.getState().differential;
+      if (!current.includes(actionLabel)) {
+        updateDifferential([...current, actionLabel]);
+      }
+    }
+  };
 
   return (
     <div className="flex flex-col h-full">
@@ -47,18 +47,23 @@ export function ActionPanel() {
       <div className="flex-1 overflow-y-auto p-4 space-y-2">
         {availableActions.map((action) => {
           const isUsed = actionLog.some((e) => e.actionId === action.id);
+          const isDiagnosisSelected = currentStage === "diagnosis" && differential.includes(action.label);
           return (
             <button
               key={action.id}
-              onClick={() => executeAction(action.id, action.label)}
+              onClick={() => handleActionClick(action.id, action.label, action.stage)}
               disabled={isUsed || isLoading}
               className={`w-full text-left p-3 rounded-lg border text-sm transition-colors ${
                 isUsed
-                  ? "bg-bg-panel/50 border-border text-text-muted cursor-not-allowed"
+                  ? isDiagnosisSelected
+                    ? "bg-accent/10 border-accent text-accent cursor-not-allowed"
+                    : "bg-bg-panel/50 border-border text-text-muted cursor-not-allowed"
                   : "bg-bg-panel border-border hover:border-accent hover:bg-bg-hover text-text-primary"
               } ${isLoading && !isUsed ? "opacity-50 cursor-not-allowed" : ""}`}
             >
-              <div className="font-medium">{action.label}</div>
+              <div className="font-medium">
+                {isDiagnosisSelected && "✓ "}{action.label}
+              </div>
               <div className="text-xs text-text-muted mt-0.5">{action.category}</div>
             </button>
           );
@@ -66,41 +71,13 @@ export function ActionPanel() {
       </div>
 
       <div className="p-4 border-t border-border">
-        {currentStage === "diagnosis" && (
-          <div className="space-y-2 mb-3">
-            <label className="text-xs text-text-muted">Your diagnosis:</label>
-            <select
-              className="w-full px-3 py-2 bg-bg-panel border border-border rounded-md text-sm"
-              onChange={(e) => {
-                if (e.target.value) {
-                  useCaseStore.getState().updateDifferential([e.target.value]);
-                }
-              }}
-            >
-              <option value="">Select a diagnosis...</option>
-              {diagnosisOptions.map((opt) => (
-                <option key={opt} value={opt}>{opt}</option>
-              ))}
-            </select>
+        {currentStage === "diagnosis" && differential.length > 0 && (
+          <div className="mb-3">
+            <label className="text-xs text-text-muted">Selected:</label>
+            <div className="text-xs text-accent mt-1">{differential[differential.length - 1]}</div>
           </div>
         )}
-        {currentStage === "treatment" && (
-          <div className="space-y-2 mb-3">
-            <label className="text-xs text-text-muted">Management plan:</label>
-            <div className="space-y-1">
-              {treatmentOptions.map((item) => (
-                <label
-                  key={item}
-                  className="flex items-center gap-2 text-xs text-text-secondary"
-                >
-                  <input type="checkbox" className="rounded border-border" />
-                  {item}
-                </label>
-              ))}
-            </div>
-          </div>
-        )}
-        {currentStage === "debrief" ? null : (
+        {currentStage !== "debrief" && (
           <button
             onClick={() => {
               if (currentStage === "treatment") {
