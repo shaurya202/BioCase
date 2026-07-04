@@ -1,0 +1,39 @@
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+src-tauri/target/
+
+# Environment
+.env
+.env.local
+.env.*.local
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Debug
+npm-debug.log*
+
+# Tauri
+src-tauri/gen/
+
+# Agent/tool configs
+AGENTS.md
+.opencode/
+.opencode.json
+.agents/
+.config/
+*.agent.*
+.claude/
+.cursor/
+copilot-instructions.md
