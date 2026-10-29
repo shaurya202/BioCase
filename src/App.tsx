@@ -8,6 +8,7 @@ import { PatientResponse } from "@/components/PatientResponse";
 import { ReasoningPanel } from "@/components/ReasoningPanel";
 import { DebriefPanel } from "@/components/DebriefPanel";
 import { CaseUploadModal } from "@/components/CaseUploadModal";
+import { PublikCard } from "@/components/PublikCard";
 
 export default function App() {
   const { currentCase, currentStage, loadCases, customCases } = useCaseStore();
@@ -30,41 +31,42 @@ export default function App() {
     : allCases;
 
   return (
-    <div className="flex h-screen bg-bg-primary text-text-primary">
+    <div className="flex h-screen bg-bg-primary text-text-primary gap-px">
       {/* Left Sidebar */}
-      <aside className="w-[280px] flex-shrink-0 bg-bg-secondary border-r border-border flex flex-col">
-        <div className="p-4 border-b border-border">
-          <h1 className="text-lg font-bold tracking-tight">BioCase</h1>
-          <p className="text-xs text-text-muted mt-1">Clinical Reasoning Simulator</p>
+      <aside className="w-[280px] flex-shrink-0 bg-bg-secondary flex flex-col">
+        <div className="px-5 py-4 border-b border-border">
+          <h1 className="text-base font-bold tracking-tight">BioCase</h1>
+          <p className="text-[11px] text-text-muted mt-0.5">Clinical Reasoning Simulator</p>
         </div>
-        <div className="p-3 space-y-2">
+        <div className="p-4 space-y-2.5">
           <input
             type="text"
             placeholder="Search cases..."
             value={search}
             onChange={(e) => setSearch(e.target.value)}
-            className="w-full px-3 py-2 bg-bg-panel border border-border rounded-md text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:border-border-focus"
+            className="w-full px-3 py-2 bg-bg-panel border border-border rounded-lg text-sm text-text-primary placeholder:text-text-muted focus:outline-none focus:border-border-focus transition-colors"
           />
           <button
             onClick={() => setUploadOpen(true)}
-            className="w-full px-3 py-2 bg-accent hover:bg-accent-hover text-white rounded-md text-sm font-medium transition-colors"
+            className="w-full px-3 py-2 bg-accent hover:bg-accent-hover text-white rounded-lg text-sm font-medium transition-colors"
           >
             + Upload Case
           </button>
         </div>
-        <div className="flex-1 overflow-y-auto p-3 space-y-2">
+        <div className="flex-1 overflow-y-auto px-3 pb-3 space-y-1.5">
           <CaseList cases={filtered} />
         </div>
+        <PublikCard />
       </aside>
 
       {/* Center Panel */}
       <main className="flex-1 flex flex-col bg-bg-primary min-w-0">
         {/* Top Bar */}
         {currentCase && (
-          <div className="flex items-center justify-between px-4 py-3 border-b border-border bg-bg-secondary">
+          <div className="flex items-center justify-between px-5 py-3 border-b border-border bg-bg-secondary">
             <div>
               <h2 className="text-sm font-semibold">{currentCase.metadata.title}</h2>
-              <p className="text-xs text-text-muted">
+              <p className="text-[11px] text-text-muted mt-0.5">
                 {currentCase.metadata.specialty} · {currentCase.metadata.difficulty}
               </p>
             </div>
@@ -87,9 +89,9 @@ export default function App() {
         ) : (
           <div className="flex-1 flex items-center justify-center">
             <div className="text-center">
-              <div className="text-6xl mb-4 opacity-20">🩺</div>
-              <h2 className="text-xl font-semibold text-text-secondary">Select a case to begin</h2>
-              <p className="text-sm text-text-muted mt-2">
+              <div className="text-5xl mb-4 opacity-15">🩺</div>
+              <h2 className="text-lg font-semibold text-text-secondary">Select a case to begin</h2>
+              <p className="text-sm text-text-muted mt-1.5">
                 Choose from the sidebar or upload your own case
               </p>
             </div>
@@ -98,7 +100,7 @@ export default function App() {
       </main>
 
       {/* Right Panel */}
-      <aside className="w-[320px] flex-shrink-0 bg-bg-secondary border-l border-border">
+      <aside className="w-[320px] flex-shrink-0 bg-bg-secondary">
         {currentStage === "debrief" ? <DebriefPanel /> : <ReasoningPanel />}
       </aside>
 

@@ -8,9 +8,9 @@ export function PatientResponse() {
   if (patientHistory.length === 0) {
     return (
       <div className="flex-1 flex items-center justify-center">
-        <div className="text-center">
-          <div className="text-5xl mb-3 opacity-20">🩺</div>
-          <h2 className="text-lg font-semibold text-text-secondary">
+        <div className="text-center px-8">
+          <div className="text-5xl mb-4 opacity-15">🩺</div>
+          <h2 className="text-base font-semibold text-text-secondary leading-relaxed">
             {currentCase.presentingComplaint}
           </h2>
           <p className="text-sm text-text-muted mt-2 max-w-md">
@@ -22,22 +22,22 @@ export function PatientResponse() {
   }
 
   return (
-    <div className="flex-1 overflow-y-auto p-4 space-y-3">
+    <div className="flex-1 overflow-y-auto p-5 space-y-4">
       {patientHistory.map((msg, i) => (
-        <div key={i} className="flex items-start gap-2">
+        <div key={i} className="flex items-start gap-3">
           {msg.role === "user" ? (
             <>
-              <div className="w-6 h-6 rounded-full bg-accent/20 flex items-center justify-center flex-shrink-0 mt-0.5">
+              <div className="w-7 h-7 rounded-full bg-accent/20 flex items-center justify-center flex-shrink-0 mt-0.5">
                 <span className="text-[10px] text-accent font-bold">Q</span>
               </div>
-              <div className="text-sm text-text-primary">{msg.content}</div>
+              <div className="text-sm text-text-primary leading-relaxed">{msg.content}</div>
             </>
           ) : (
             <>
-              <div className="w-6 h-6 rounded-full bg-bg-panel flex items-center justify-center flex-shrink-0 mt-0.5 border border-border">
+              <div className="w-7 h-7 rounded-full bg-bg-panel flex items-center justify-center flex-shrink-0 mt-0.5 border border-border">
                 <span className="text-[10px] text-text-muted">A</span>
               </div>
-              <div className="text-sm text-text-secondary bg-bg-panel rounded-lg px-3 py-2 border border-border">
+              <div className="text-sm text-text-secondary bg-bg-panel rounded-xl px-4 py-2.5 border border-border leading-relaxed">
                 {msg.content}
               </div>
             </>
@@ -45,11 +45,11 @@ export function PatientResponse() {
         </div>
       ))}
       {isLoading && (
-        <div className="flex items-start gap-2">
-          <div className="w-6 h-6 rounded-full bg-bg-panel flex items-center justify-center flex-shrink-0 mt-0.5 border border-border">
+        <div className="flex items-start gap-3">
+          <div className="w-7 h-7 rounded-full bg-bg-panel flex items-center justify-center flex-shrink-0 mt-0.5 border border-border">
             <span className="text-[10px] text-text-muted">A</span>
           </div>
-          <div className="text-sm text-text-muted bg-bg-panel rounded-lg px-3 py-2 border border-border animate-pulse">
+          <div className="text-sm text-text-muted bg-bg-panel rounded-xl px-4 py-2.5 border border-border animate-pulse">
             {loadingMessage || "Thinking..."}
           </div>
         </div>

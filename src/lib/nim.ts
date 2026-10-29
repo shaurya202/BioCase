@@ -1,3 +1,6 @@
+import { invoke } from "@tauri-apps/api/core";
+import { isTauri } from "./publik";
+
 const NIM_BASE = "https://integrate.api.nvidia.com/v1";
 const MODEL = "nvidia/llama-3.3-nemotron-super-49b-v1.5";
 
@@ -14,14 +17,40 @@ export async function chatCompletion(
   messages: ChatMessage[],
   options: { model?: string; temperature?: number; maxTokens?: number } = {}
 ): Promise<string> {
-  const apiKey = import.meta.env.VITE_NIM_API_KEY;
-  if (!apiKey) throw new Error("VITE_NIM_API_KEY not set in .env");
+  const ownKey = import.meta.env.VITE_NIM_API_KEY;
+
+  if (isTauri()) {
+    try {
+      const res = await invoke<{ choices?: { message?: { content: string } }[] }>(
+        "publik_chat_completion",
+        {
+          messages,
+          userBaseUrl: ownKey ? NIM_BASE : null,
+          userApiKey: ownKey || null,
+          model: ownKey ? (options.model ?? MODEL) : "publik-fast",
+          temperature: options.temperature ?? 0.7,
+          maxTokens: options.maxTokens ?? 1024,
+        }
+      );
+      if (res?.choices?.[0]?.message?.content) {
+        return res.choices[0].message.content;
+      }
+    } catch (err: any) {
+      if (err?.error?.message) {
+        const topUp = err.error.top_up_url ? ` Link: ${err.error.top_up_url}` : "";
+        throw new Error(`${err.error.message}${topUp}`);
+      }
+      throw err;
+    }
+  }
+
+  if (!ownKey) throw new Error("VITE_NIM_API_KEY not set and publik not available outside desktop app.");
 
   const res = await fetch(`${NIM_BASE}/chat/completions`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
-      Authorization: `Bearer ${apiKey}`,
+      Authorization: `Bearer ${ownKey}`,
     },
     body: JSON.stringify({
       model: options.model ?? MODEL,

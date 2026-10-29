@@ -29,24 +29,24 @@ export function StageIndicator({ currentStage }: { currentStage: Stage }) {
         return (
           <div key={s.key} className="flex items-center gap-1">
             <div
-              className={`flex items-center gap-1.5 px-2.5 py-1 rounded text-xs font-medium transition-colors ${
+              className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[11px] font-medium transition-colors ${
                 isActive
                   ? "bg-accent text-white"
                   : isPast
-                    ? "bg-accent/20 text-accent"
+                    ? "bg-accent/15 text-accent"
                     : "bg-bg-panel text-text-muted"
               }`}
             >
               <span
                 className={`w-1.5 h-1.5 rounded-full ${
-                  isActive ? "bg-white" : isPast ? "bg-accent" : "bg-text-muted"
+                  isActive ? "bg-white" : isPast ? "bg-accent" : "bg-text-muted/50"
                 }`}
               />
               {s.label}
             </div>
             {i < stages.length - 1 && (
               <div
-                className={`w-4 h-px ${isPast ? "bg-accent" : "bg-border"}`}
+                className={`w-3 h-px ${isPast ? "bg-accent/50" : "bg-border/50"}`}
               />
             )}
           </div>
